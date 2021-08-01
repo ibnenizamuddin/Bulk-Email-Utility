@@ -7,31 +7,35 @@ import pandas as pd
 
 
 def SendBulkEmail():
-    try:
-        smtpcreds = getSMTPConfig()
-        emailAddress = getEmailAddressFromCSV()
-        # Login to SMTP
-        session = smtplib.SMTP(str(smtpcreds[0]), int(smtpcreds[1]))
-        session.starttls()
-        session.login(str(smtpcreds[2]), str(smtpcreds[3]))
+    smtpcreds = getSMTPConfig()
+    emailAddress = getEmailAddressFromCSV()
+    # Login to SMTP
+    session = smtplib.SMTP(str(smtpcreds[0]), int(smtpcreds[1]))
+    session.starttls()
+    session.login(str(smtpcreds[2]), str(smtpcreds[3]))
 
-        # get email content
-        mail_content = getEmailContent()
-        mail_subject = smtpcreds[5]
+    # get email content
+    mail_content = getEmailContent()
+    mail_subject = smtpcreds[5]
 
-        # Building Message
-        for email in emailAddress:
-            message = MIMEMultipart()
-            message['From'] = str(smtpcreds[4])
-            message['To'] = str(email)
-            message['Subject'] = mail_subject
-            message.attach(MIMEText(mail_content, 'plain'))
-            text = message.as_string()
+    # Building Message
+    f = open("EmailSentReport.txt", "a")
+
+    for email in emailAddress:
+        message = MIMEMultipart()
+        message['From'] = str(smtpcreds[4])
+        message['To'] = str(email)
+        message['Subject'] = mail_subject
+        message.attach(MIMEText(mail_content, 'plain'))
+        text = message.as_string()
+        try:
             session.sendmail(str(smtpcreds[2]), str(email), text)
-            print("emailsend")
-        session.quit()
-    except:
-        print("Something went wrong while logging: Unable to send email")
+            f.write(f'Email was sent for: {str(email)}\n')
+        except Exception:
+            f.write(f'Unable to sent Email: {str(email)}\n')
+            continue
+    session.quit()
+    f.close()
 
 
 def getSMTPConfig():

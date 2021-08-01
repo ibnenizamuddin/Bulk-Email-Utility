@@ -1,0 +1,3 @@
+Email was sent for: ibnenizamuddin@gmail.com
+Unable to sent Email: abc
+Email was sent for: python.devlearning@gmail.com
